@@ -5,7 +5,7 @@ import validator from 'validator';
 
 const CustomerSchema = new Schema(
   {
-    irstName: {
+    firstName: {
       type: String,
       required: [true, 'First name is required'],
       trim: true,
