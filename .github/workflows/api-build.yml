@@ -1,8 +1,8 @@
-name: School API Build CI
+name: Customer Management API Build CI
 
 on:
   push:
-    branches: [master, develop, member/**]
+    branches: [master, dev]
   pull_request:
     branches: [master, dev]
 
