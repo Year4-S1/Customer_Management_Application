@@ -4,6 +4,16 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const body_parser = require('body-parser');
 
+import {
+  DEVELOPMENT_PORT,
+  DEVELOPMENT_MONGO_URI,
+  PRODUCTION_PORT,
+  PRODUCTION_MONGO_URI,
+  LOCAL_MONGO_URI,
+} from './config';
+import LOG from './log';
+import routes from './src/routes';
+
 dotenv.config();
 const app = express(); 
 app.use(cors());
@@ -28,6 +38,7 @@ mongoose.connection.once('open', () =>{
 
 app.listen(PORT, () =>{
   console.log(`API is up and running on PORT ${PORT}`);
+  routes(app);
 });
 
 app.route('/').get((req, res) => {

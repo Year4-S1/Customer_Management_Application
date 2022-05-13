@@ -18,10 +18,10 @@ export async function createCustomer(req, res) {
       await customer.save();
       const TOKEN = await customer.generateAuthToken();
       let responseData = {
-        user_id: user._id,
-        userName: user.userName,
+        user_id: customer._id,
+        userName: customer.userName,
         token: TOKEN,
-        role: user.role,
+        role: customer.role,
       };
       return resolve({ responseData, TOKEN });
     })
@@ -38,5 +38,48 @@ export async function createCustomer(req, res) {
         LOG.info(enums.user.CREATE_ERROR);
         responseHandler.handleError(res, error.message);
       });
+  }
+}
+
+export async function loginCustomer(req, res) {
+  if (req.body && req.body.userName && req.body.password) {
+    let { userName, password } = req.body;
+
+    new Promise(async (resolve, reject) => {
+      try {
+        let customer = await Customer.findByUsernamePassword(userName, password);
+
+        if (!customer) {
+          throw new Error(enums.customer.NOT_FOUND);
+        }
+
+        const TOKEN = await customer.generateAuthToken();
+        let responseData = {
+          user_id: customer._id,
+          userName: customer.userName,
+          token: TOKEN,
+          role: customer.role,
+        };
+        return resolve({ responseData });
+      } catch (error) {
+        return resolve(error.message);
+      }
+    })
+      .then((data) => {
+        if (data === enums.customer.NOT_FOUND) {
+          LOG.warn(enums.customer.NOT_FOUND);
+        } else if (data === enums.customer.PASSWORD_NOT_MATCH) {
+          LOG.warn(enums.customer.PASSWORD_NOT_MATCH);
+        } else {
+          LOG.info(enums.customer.LOGIN_SUCCESS);
+        }
+        responseHandler.respond(res, data);
+      })
+      .catch((error) => {
+        LOG.info(enums.customer.LOGIN_ERROR);
+        responseHandler.handleError(res, error.message);
+      });
+  } else {
+    return responseHandler.handleError(res, enums.customer.CREDENTIAL_REQUIRED);
   }
 }
