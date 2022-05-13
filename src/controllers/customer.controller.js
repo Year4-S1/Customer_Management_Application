@@ -83,3 +83,23 @@ export async function loginCustomer(req, res) {
     return responseHandler.handleError(res, enums.customer.CREDENTIAL_REQUIRED);
   }
 }
+
+export async function getCustomerInfo(req, res) {
+  const customer = req.customer;
+
+  if (customer) {
+    const customerObject = {
+      _id: req.customer._id,
+      firstName: req.customer.firstName,
+      lastName: req.customer.lastName,
+      email: req.customer.email,
+      phoneNumber: req.customer.phoneNumber,
+      addressLine: req.customer.addressLine,
+      userName: req.customer.userName,
+    };
+
+    responseHandler.respond(res, customerObject);
+  } else {
+    responseHandler.notFound(res);
+  }
+}
