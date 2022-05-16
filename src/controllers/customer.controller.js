@@ -100,26 +100,14 @@ const getAllCustomers = async (req, res) => {
 const getCustomerById = async (req, res, next) =>{
   if (req.params && req.params.id) {
     await Customer.findById(req.params.id)
-      .populate({
-        path: 'customer',
-        populate: {
-          path: 'customer',
-          model: 'customers',
-          select:
-            '_id firstname lastname address phone email username',
-        },
-      })
       .then((data) => {
-        response.sendRespond(res, data);
-        next();
+        res.status(200).send({ data: data });
+        LOG.info(enums.customer.VIEW_SUCCESS);
       })
       .catch((error) => {
-        response.sendRespond(res, error.message);
-        next();
+        res.status(500).send({ error: error.message });
+        LOG.info(enums.customer.VIEW_UNSUCCESS);
       });
-  } else {
-    response.sendRespond(res, enums.customer.NOT_FOUND);
-    return;
   }
 }
 
@@ -156,31 +144,19 @@ const updateCustomer = async (req, res) => {
 
 //delete customer '/delete'
 const deleteCustomer = async (req, res) => {
-  if (req.params.id && req.customer) {
-    try {
-      new Promise(async (resolve, reject) => {
-        let customer = await Customer.findById(req.params.id);
+  const id = req.params.id;
+  console.log(id);
 
-        if (!customer) {
-          throw new Error(enums.NOT_FOUND);
-        }
-        customer = await Customer.findByIdAndDelete(req.params.id);
-        return resolve({ customer });
-      })
-        .then((data) => {
-          responseHandler.respond(res, data);
-        })
-        .catch((error) => {
-          console.log(error);
-          responseHandler.handleError(res, error.message);
-        });
-    } catch (error) {
-      console.log(error);
-      return responseHandler.handleError(res, error.message);
-    }
-  } else {
-    return responseHandler.respond(res, enums.customer.NOT_FOUND);
-  }
+  //delete customer data from database
+  await Customer.findByIdAndDelete(req.params.id)
+    .then((response) => {
+      res.status(200).send(response);
+      LOG.info(enums.customer.DELETE_SUCCESS);
+    })
+    .catch((err) => {
+      res.status(500).send(err.message);
+      LOG.info(enums.customer.DELETE_ERROR);
+    });
 }
 
 module.exports = {
