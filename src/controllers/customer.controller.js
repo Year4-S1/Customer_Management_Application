@@ -1,47 +1,27 @@
-import Customer from '../models/Customer';
-import enums from './controller.enums';
-import responseHandler from '../response/response-handler';
-import { response } from 'express';
-import LOG from './controller.log';
+const Customer = require('../models/Customer');
+const enums = require('./controller.enums') ;
+const  responseHandler = require('../response/response-handler') ;
+const response  = require('express');
+const LOG = require('./controller.log');
 
-export async function createCustomer(req, res) {
-  if (req.body && req.body.userName) {
-    new Promise(async (resolve, reject) => {
-      let userName = req.body.userName;
-      let customer = await Customer.findOne({ userName: userName });
-
-      if (customer) {
-        return resolve(enums.customer.ALREADY_EXIST);
-      }
-
-      customer = new Customer(req.body);
-      await customer.save();
-      const TOKEN = await customer.generateAuthToken();
-      let responseData = {
-        user_id: customer._id,
-        userName: customer.userName,
-        token: TOKEN,
-        role: customer.role,
-      };
-      return resolve({ responseData, TOKEN });
-    })
+const  createCustomer = async (req, res) => {
+  if (req.body) {
+    const customer = new Customer(req.body);
+    await customer
+      .save()
       .then((data) => {
-        if (data === enums.customer.ALREADY_EXIST) {
-          LOG.warn(enums.customer.ALREADY_EXIST);
-        } else {
-          LOG.info(enums.customer.CREATE_SUCCESS);
-        }
-
-        responseHandler.respond(res, data);
+        res.status(200).send({ data: data });
+        LOG.info(enums.customer.CREATE_SUCCESS);
       })
       .catch((error) => {
-        LOG.info(enums.user.CREATE_ERROR);
-        responseHandler.handleError(res, error.message);
+        res.status(500).send({ error: error.message });
+        LOG.info(enums.customer.CREATE_ERROR);
       });
   }
 }
 
-export async function loginCustomer(req, res) {
+//Customer login
+const loginCustomer = async (req, res) => {
   if (req.body && req.body.userName && req.body.password) {
     let { userName, password } = req.body;
 
@@ -84,7 +64,8 @@ export async function loginCustomer(req, res) {
   }
 }
 
-export async function getCustomerInfo(req, res) {
+//get customer information
+const getCustomerInfo = async (req, res) => {
   const customer = req.customer;
 
   if (customer) {
@@ -105,7 +86,7 @@ export async function getCustomerInfo(req, res) {
 }
 
 //Get all customers
-export async function getAllCustomers(req, res) {
+const getAllCustomers = async (req, res) => {
   await Customer.find({})
     .then((customers) => {
       res.status(200).json(customers);
@@ -116,7 +97,7 @@ export async function getAllCustomers(req, res) {
 }
 
 //get employee by id
-export async function getCustomerById(req, res, next) {
+const getCustomerById = async (req, res, next) =>{
   if (req.params && req.params.id) {
     await Customer.findById(req.params.id)
       .populate({
@@ -142,8 +123,39 @@ export async function getCustomerById(req, res, next) {
   }
 }
 
+const updateCustomer = async (req, res) => {
+  if (!req.is("application/json")) {
+    res.send(400);
+  } else {
+    Customer.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          email: req.body.email,
+          phoneNumber: req.body.phoneNumber,
+          address: req.body.address,
+          userName: req.body.userName
+        },
+      },
+      { upsert: true },
+      function (err, result) {
+        if (err) {
+          res.status(500).send(body);
+          LOG.info(enums.customer.NOT_FOUND);
+        } else {
+          res.status(200).send(result);
+          LOG.info(enums.customer.UPDATE_SUCCESS);
+        }
+      }
+    );
+  }
+};
+
+
 //delete customer '/delete'
-export async function deleteCustomer(req, res) {
+const deleteCustomer = async (req, res) => {
   if (req.params.id && req.customer) {
     try {
       new Promise(async (resolve, reject) => {
@@ -169,4 +181,14 @@ export async function deleteCustomer(req, res) {
   } else {
     return responseHandler.respond(res, enums.customer.NOT_FOUND);
   }
+}
+
+module.exports = {
+  createCustomer,
+  loginCustomer,
+  getCustomerInfo,
+  getAllCustomers,
+  getCustomerById,
+  updateCustomer,
+  deleteCustomer
 }

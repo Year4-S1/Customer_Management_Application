@@ -1,9 +1,9 @@
-import mongoose, { Schema } from 'mongoose';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import validator from 'validator';
+const mongoose = require('mongoose') ;
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const validator = require('validator');
 
-const CustomerSchema = new Schema(
+const CustomerSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -36,7 +36,7 @@ const CustomerSchema = new Schema(
         }
       },
     },
-    addressLine: {
+    address: {
       type: String,
       required: [true, 'Address  is required'],
       trim: true,
@@ -93,4 +93,4 @@ CustomerSchema.statics.findByUsernamePassword = async function (
 
 const Customer = mongoose.model('customers', CustomerSchema);
 
-export default Customer;
+module.exports = Customer;

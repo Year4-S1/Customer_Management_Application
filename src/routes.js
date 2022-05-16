@@ -1,9 +1,16 @@
-import { loginCustomer, createCustomer, getCustomerInfo } from './controllers/customer.controller';
-import auth from './middlewares/authentication';
+const express = require("express");
+const router = express.Router();
+const service = require("./controllers/customer.controller");
+const auth = require('./middlewares/authentication');
 
-export default function(app){
-  //API endpoints of Customer 
-  app.post('/customer/create',createCustomer);
-  app.post('/customer/login', loginCustomer);
-  app.get('/customer/',auth, getCustomerInfo);
-}
+module.exports = function () {
+  router.post("/create", service.createCustomer);
+  router.post('/login', service.loginCustomer);
+  router.get('/customer/', auth, service.getCustomerInfo);
+  router.get('/viewall', service.getAllCustomers);
+  router.get('/view/:id', service.getCustomerById);
+  router.put('/update/:id', auth ,service.updateCustomer);
+  router.delete("/delete/:id",auth, service.deleteCustomer);
+
+  return router;
+};
