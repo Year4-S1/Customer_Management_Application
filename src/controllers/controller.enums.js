@@ -9,5 +9,9 @@ module.exports = {
     PASSWORD_NOT_MATCH: 'Password is not matched',
     CREDENTIAL_REQUIRED: 'Username and the password is required',
     UPDATE_SUCCESS: 'Updated Successfully',
+    VIEW_SUCCESS: 'View Customer By ID is successful',
+    VIEW_UNSUCCESS: 'View Customer By ID is unsuccessful',
+    DELETE_SUCCESS: 'Customer Deleted',
+    DELETE_ERROR: 'Customer Deletion Unsuccessful'
   }
 };
