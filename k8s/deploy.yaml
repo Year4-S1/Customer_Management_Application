@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customer-management
+spec:
+  selector:
+    matchLabels:
+      app: customer-management
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: customer-management
+    spec:
+      containers:
+        - name: customer-management
+          image: raveenaw/customer-management-application:{{tag}}
+          ports:
+            - containerPort: 8089

@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   customer: {
     CREATE_SUCCESS: 'Customer created successfully',
     CREATE_ERROR: 'Customer creation unsuccess',
@@ -8,5 +8,6 @@ export default {
     NOT_FOUND: 'Customer not found',
     PASSWORD_NOT_MATCH: 'Password is not matched',
     CREDENTIAL_REQUIRED: 'Username and the password is required',
+    UPDATE_SUCCESS: 'Updated Successfully',
   }
 };

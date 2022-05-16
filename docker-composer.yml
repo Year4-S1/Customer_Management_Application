@@ -1,0 +1,18 @@
+version: "1"
+services:
+  app:
+    container_name: ctse
+    restart: always
+    build: .
+    ports:
+      - "9090:8089"
+    links:
+      - mongo
+
+  # mongo:
+  #   container_name: mongo
+  #   image: mongo
+  #   volumes:
+  #     - /data/db
+  #   ports:
+  #     - "27017:27017"

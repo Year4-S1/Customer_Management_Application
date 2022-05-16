@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   respond: function (res, data, status = 201) {
     if (data === null) {
       return res.status(404).json({ status: 404, message: 'Data Not Found!' });
