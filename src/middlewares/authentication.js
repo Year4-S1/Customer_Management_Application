@@ -9,7 +9,7 @@ module.exports = async function auth(req, res, next) {
 
     if (!customer) {
       throw new Error(
-        'Error from auth middleware - Plase authenticate to the system'
+        'Error from auth middleware - Please authenticate to the system'
       );
     }
     req.token = TOKEN;
