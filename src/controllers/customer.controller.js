@@ -103,3 +103,70 @@ export async function getCustomerInfo(req, res) {
     responseHandler.notFound(res);
   }
 }
+
+//Get all customers
+export async function getAllCustomers(req, res) {
+  await Customer.find({})
+    .then((customers) => {
+      res.status(200).json(customers);
+    })
+    .catch((error) => {
+      res.status(500).json(error.message);
+    });
+}
+
+//get employee by id
+export async function getCustomerById(req, res, next) {
+  if (req.params && req.params.id) {
+    await Customer.findById(req.params.id)
+      .populate({
+        path: 'customer',
+        populate: {
+          path: 'customer',
+          model: 'customers',
+          select:
+            '_id firstname lastname address phone email username',
+        },
+      })
+      .then((data) => {
+        response.sendRespond(res, data);
+        next();
+      })
+      .catch((error) => {
+        response.sendRespond(res, error.message);
+        next();
+      });
+  } else {
+    response.sendRespond(res, enums.customer.NOT_FOUND);
+    return;
+  }
+}
+
+//delete customer '/delete'
+export async function deleteCustomer(req, res) {
+  if (req.params.id && req.customer) {
+    try {
+      new Promise(async (resolve, reject) => {
+        let customer = await Customer.findById(req.params.id);
+
+        if (!customer) {
+          throw new Error(enums.NOT_FOUND);
+        }
+        customer = await Customer.findByIdAndDelete(req.params.id);
+        return resolve({ customer });
+      })
+        .then((data) => {
+          responseHandler.respond(res, data);
+        })
+        .catch((error) => {
+          console.log(error);
+          responseHandler.handleError(res, error.message);
+        });
+    } catch (error) {
+      console.log(error);
+      return responseHandler.handleError(res, error.message);
+    }
+  } else {
+    return responseHandler.respond(res, enums.customer.NOT_FOUND);
+  }
+}
