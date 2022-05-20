@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
         - name: customer-management
-          image: raveenaw/customer-management-application:{{tag}}
+          image: raveenaw/customer-management-application:{{tag}} #path of the image
           ports:
             - containerPort: 8089
