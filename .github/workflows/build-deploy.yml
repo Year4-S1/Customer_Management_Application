@@ -10,10 +10,9 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: customer-management-cluster # TODO: update to cluster name
-  GKE_ZONE: us-central1 # TODO: update to cluster zone
-  DEPLOYMENT_NAME: customer-management # TODO: update deployment name if changed in deployment.yaml
-
+  GKE_CLUSTER: customer-management-cluster 
+  GKE_ZONE: us-central1 
+  DEPLOYMENT_NAME: customer-management 
 jobs:
 
   build:
@@ -30,7 +29,7 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: run shell script
+      - name: run shell script 
 
         run: echo commit hash is ${{ github.sha }}
 
@@ -63,7 +62,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/customer-management-application:${{ github.sha }}
 
       - name: Update config files in k8s
-        run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak
+        run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak 
 
         # Alternative option - authentication via credentials json
       - id: "auth"
